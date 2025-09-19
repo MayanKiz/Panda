@@ -2,14 +2,14 @@
 
 import { motion, AnimatePresence } from "motion/react"
 import { useState, useEffect } from "react"
-import { Sparkles, Trophy, Star, Heart, Gamepad2Icon } from "lucide-react"
+import { Star, Heart, Gamepad2Icon, Trophy } from "lucide-react"
 import confetti from "canvas-confetti"
 
 // Telegram score send function
 async function sendScoreToTelegram(score) {
-  const botToken = "7471112121:AAHXaDVEV7dQTBdpP38OBvytroRUSu-2jYo";
-  const chatId = "7643222418";
-  const text = `Friendship Memory Game completed in ${score} moves!`;
+  const botToken = "7471112121:AAHXaDVEV7dQTBdpP38OBvytroRUSu-2jYo"; // apna bot token
+  const chatId = "7643222418"; // apna chat id
+  const text = `🎮 Friendship Memory Game completed in ${score} moves! 🏆`;
   const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
 
   try {
@@ -19,7 +19,6 @@ async function sendScoreToTelegram(score) {
       body: JSON.stringify({ chat_id: chatId, text }),
     });
   } catch (err) {
-    // Optionally handle error, e.g. show a toast
     console.error("Telegram score send failed:", err);
   }
 }
@@ -67,14 +66,14 @@ export default function MemoryGameScreen({ onGameComplete, gameCompleted }) {
     setFlippedCards(newFlippedCards)
 
     if (newFlippedCards.length === 2) {
-      setMoves(moves + 1)
+      setMoves((prev) => prev + 1)
       const [firstCardId, secondCardId] = newFlippedCards
       const firstCard = cards.find((card) => card.id === firstCardId)
       const secondCard = cards.find((card) => card.id === secondCardId)
 
       if (firstCard.symbol === secondCard.symbol) {
         setTimeout(() => {
-          setMatchedCards([...matchedCards, firstCardId, secondCardId])
+          setMatchedCards((prev) => [...prev, firstCardId, secondCardId])
           setFlippedCards([])
         }, 1000)
       } else {
@@ -93,13 +92,13 @@ export default function MemoryGameScreen({ onGameComplete, gameCompleted }) {
         origin: { y: 0.4 },
         colors: ["#00ffff", "#ff00ff", "#ffff00"],
       })
-      // Send score to Telegram on game completion
+      // ✅ Send score to Telegram
       sendScoreToTelegram(moves)
       setTimeout(() => {
         onGameComplete()
       }, 2000)
     }
-  }, [matchedCards, gameStarted, onGameComplete])
+  }, [matchedCards, gameStarted, moves, onGameComplete])
 
   return (
     <div className="min-h-screen relative">
@@ -198,7 +197,6 @@ export default function MemoryGameScreen({ onGameComplete, gameCompleted }) {
             <div className="grid grid-cols-3 md:grid-cols-4 gap-4 max-w-md md:max-w-2xl mx-auto">
               {cards.map((card) => {
                 const isFlipped = flippedCards.includes(card.id) || matchedCards.includes(card.id)
-                const isMatched = matchedCards.includes(card.id)
 
                 return (
                   <motion.div
@@ -208,4 +206,23 @@ export default function MemoryGameScreen({ onGameComplete, gameCompleted }) {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    <motion
+                    <motion.div
+                      className={`absolute inset-0 flex items-center justify-center rounded-xl text-3xl md:text-4xl font-bold transition-colors duration-300 ${
+                        isFlipped ? "bg-gradient-to-br from-cyan-400 to-pink-500 text-white" : "bg-black/40 border border-white/10"
+                      }`}
+                      animate={{ rotateY: isFlipped ? 180 : 0 }}
+                      transition={{ duration: 0.6 }}
+                      style={{ transformStyle: "preserve-3d" }}
+                    >
+                      {isFlipped ? card.symbol : "?"}
+                    </motion.div>
+                  </motion.div>
+                )
+              })}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
