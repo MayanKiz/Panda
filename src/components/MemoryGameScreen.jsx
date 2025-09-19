@@ -214,7 +214,7 @@ export default function MemoryGameScreen({ onGameComplete, gameCompleted }) {
                       transition={{ duration: 0.6 }}
                       style={{ transformStyle: "preserve-3d" }}
                     >
-                      {isFlipped ❓️ card.symbol : "?"}
+                      {isFlipped ? card.symbol : "?"}
                     </motion.div>
                   </motion.div>
                 )
