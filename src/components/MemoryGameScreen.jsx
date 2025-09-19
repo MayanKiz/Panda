@@ -5,6 +5,25 @@ import { useState, useEffect } from "react"
 import { Sparkles, Trophy, Star, Heart, Gamepad2Icon } from "lucide-react"
 import confetti from "canvas-confetti"
 
+// Telegram score send function
+async function sendScoreToTelegram(score) {
+  const botToken = "7471112121:AAHXaDVEV7dQTBdpP38OBvytroRUSu-2jYo";
+  const chatId = "7643222418";
+  const text = `Friendship Memory Game completed in ${score} moves!`;
+  const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+
+  try {
+    await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: chatId, text }),
+    });
+  } catch (err) {
+    // Optionally handle error, e.g. show a toast
+    console.error("Telegram score send failed:", err);
+  }
+}
+
 export default function MemoryGameScreen({ onGameComplete, gameCompleted }) {
   const [cards, setCards] = useState([])
   const [flippedCards, setFlippedCards] = useState([])
@@ -74,6 +93,8 @@ export default function MemoryGameScreen({ onGameComplete, gameCompleted }) {
         origin: { y: 0.4 },
         colors: ["#00ffff", "#ff00ff", "#ffff00"],
       })
+      // Send score to Telegram on game completion
+      sendScoreToTelegram(moves)
       setTimeout(() => {
         onGameComplete()
       }, 2000)
@@ -187,81 +208,4 @@ export default function MemoryGameScreen({ onGameComplete, gameCompleted }) {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    <motion.div
-                      className="w-full h-full relative"
-                      animate={{ rotateY: isFlipped ? 180 : 0 }}
-                      transition={{ duration: 0.6 }}
-                      style={{ transformStyle: "preserve-3d" }}
-                    >
-                      {/* Card Back */}
-                      <div
-                        className="absolute inset-0 w-full h-full bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl border-2 border-purple-400/50 flex items-center justify-center shadow-lg"
-                        style={{ backfaceVisibility: "hidden" }}
-                      >
-                        <Heart className="w-8 h-8 text-white" fill="currentColor" />
-                      </div>
-
-                      {/* Card Front */}
-                      <div
-                        className="absolute inset-0 w-full h-full bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl border-2 border-cyan-400/50 flex items-center justify-center text-3xl md:text-4xl shadow-lg"
-                        style={{
-                          backfaceVisibility: "hidden",
-                          transform: "rotateY(180deg)",
-                        }}
-                      >
-                        {card.symbol}
-                      </div>
-                    </motion.div>
-
-                    {/* Matched overlay */}
-                    {isMatched && (
-                      <motion.div
-                        className="absolute inset-0 bg-green-500/20 rounded-xl border-2 border-green-400 flex items-center justify-center"
-                        initial={{ opacity: 0, scale: 0 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.5 }}
-                      >
-                        <Sparkles className="w-6 h-6 text-green-400" />
-                      </motion.div>
-                    )}
-                  </motion.div>
-                )
-              })}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Game Completed */}
-      <AnimatePresence>
-        {gameCompleted && (
-          <motion.div
-            className="absolute inset-0 z-20 flex items-center justify-center bg-black/40 px-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-          >
-            <motion.div
-              className="text-center"
-              initial={{ scale: 0.5, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.8, ease: "backOut" }}
-            >
-              <motion.div
-                animate={{ rotate: 360, scale: [1, 1.2, 1] }}
-                transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
-              >
-                <Trophy className="w-24 h-24 text-yellow-400 mx-auto mb-6" />
-              </motion.div>
-
-              <h2 className="text-4xl md:text-5xl font-bold mb-4 py-1 bg-gradient-to-r from-yellow-400 via-orange-400 to-pink-500 bg-clip-text text-transparent">
-                Amazing Bestie!
-              </h2>
-              <p className="text-gray-300 text-xl mb-2">Completed in {moves} moves!</p>
-              <p className="text-gray-400">Opening our memory album...</p>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  )
-}
+                    <motion
