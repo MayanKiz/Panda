@@ -51,7 +51,7 @@ export default function IntroScreen({ onNext }) {
                             transition={{ delay: 0.5, duration: 0.8 }}
                         >
                             <span className="bg-gradient-to-r from-cyan-400 to-pink-500 bg-clip-text text-transparent">
-                                This Friendship Day
+                                To This Friendship...
                             </span>
                             <br />
                             <span className="bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">
