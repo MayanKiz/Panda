@@ -20,12 +20,10 @@ export default function FinalMessageScreen() {
     "You've been my constant, my support, my partner in crime! 🎉",
     "Thank you for being the most amazing friend anyone could ask for! ✨",
     "Here's to many more years of friendship, fun, and unforgettable memories! 🥳",
-    "Happy Friendship Day, my dear friend! 💖",
+    "Happy New Year, my dear friend! 💖",
   ]
 
-  const titleWords = ["HAPPY", "FRIENDSHIP", "DAY!"]
-
-  const isMobile = typeof window !== "undefined" && window.innerWidth < 768
+  const titleWords = ["HAPPY", "New", "Year!""Ye"D!  const isMobile = typeof window !"undefined" && window.innerWidth < 768
 
   // Special entrance effect
   useEffect(() => {
