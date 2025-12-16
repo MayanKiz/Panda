@@ -14,17 +14,26 @@ export default function FinalMessageScreen() {
   const [floatingElements, setFloatingElements] = useState([])
 
   const messages = [
-    "Hey bestie! 💕",
-    "You mean the world to me...",
-    "Through every laugh, every tear, every crazy adventure...",
-    "You've been my constant, my support, my partner in crime! 🎉",
-    "Thank you for being the most amazing friend anyone could ask for! ✨",
-    "Here's to many more years of friendship, fun, and unforgettable memories! 🥳",
-    "Happy New Year, my dear friend! 💖",
-  ]
+  "Hey bestie 💕",
+  "Yeh wish thodi advance hai, par dil se hai.",
+  "Tum sirf meri friend nahi ho, tum meri strength ho.",
+  "Har laugh, har silence, har tough day me tum saath rahi ho.",
+  "Aaj jab pata chala tum thodi dukhi thi, aankhen khud bhar aayi.",
+  "Tab realize hua ki tum mere liye kitni important ho.",
+  "I love you, as a friend, deeply and genuinely. Words kaafi nahi hote.",
+  "Tumne bina bole samjha, bina condition support kiya.",
+  "I know life ne tumse bohot kuch cheena hai, par tum phir bhi strong rahi.",
+  "Tumhari smile me ek alag si himmat hai.",
+  "Thank you for existing, for caring, for being you.",
+  "Naya saal tumhare liye thoda halka ho, thoda zyada kind ho.",
+  "Main hamesha yahin hoon, jaise ek dost hota hai.",
+  "Happy New Year 🤍"
+];
 
-  const titleWords = ["HAPPY", "New", "Year"]  const isMobile = typeof window !"undefined" && window.innerWidth < 768
+const titleWords = ["HAPPY", "NEW", "YEAR"];
 
+const isMobile =
+  typeof window !== "undefined" && window.innerWidth < 768;
   // Special entrance effect
   useEffect(() => {
     // Trigger confetti after title complete
