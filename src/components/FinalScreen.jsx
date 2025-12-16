@@ -23,7 +23,7 @@ export default function FinalMessageScreen() {
     "Happy New Year, my dear friend! 💖",
   ]
 
-  const titleWords = ["HAPPY", "New", "Year!""Ye"D!  const isMobile = typeof window !"undefined" && window.innerWidth < 768
+  const titleWords = ["HAPPY", "New", "Year"!]  const isMobile = typeof window !"undefined" && window.innerWidth < 768
 
   // Special entrance effect
   useEffect(() => {
