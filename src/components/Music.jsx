@@ -14,7 +14,7 @@ export default function Music({ shouldPlay }) {
 
     return (
         <audio ref={audioRef} loop preload="auto">
-            <source src="/audio/bg.mp3" type="audio/mpeg" />
+            <source src="public/audio/Dooron-Dooron-Official-Video-Paresh-Pahuja-Feat-Harleen-Seth (1).m4a" type="audio/mpeg" />
         </audio>
     )
 }
