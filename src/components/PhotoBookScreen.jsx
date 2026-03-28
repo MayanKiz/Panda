@@ -12,19 +12,19 @@ export default function PhotoBookScreen({ onNext }) {
     const photos = [
         {
             id: 1,
-            src: "/images/SmartSelect_20251003_091403_Photo Editor.jpg",
+            src: "/audio/Snapchat-2104945698.jpg",
         },
         {
             id: 2,
-            src: "/images/Screenshot_20251113_210757_Instagram.jpg",
+            src: "/audio/Snapchat-2104945698.jpg,
         },
         {
             id: 3,
-            src: "/images/Screenshot_20251008_171231_Instagram.jpg",
+            src: "/audio/Snapchat-2104945698.jpg,
         },
         {
             id: 4,
-            src: "/images/Screenshot_20250120_200109_Gallery.jpg",
+            src: "/audio/Snapchat-2104945698.jpg,
         },
     ]
 
