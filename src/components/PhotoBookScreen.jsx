@@ -10,23 +10,23 @@ export default function PhotoBookScreen({ onNext }) {
     const [currentPage, setCurrentPage] = useState(0)
 
     const photos = [
-        {
-            id: 1,
-            src: "/audio/Snapchat-2104945698.jpg",
-        },
-        {
-            id: 2,
-            src: "/audio/Snapchat-2104945698.jpg,
-        },
-        {
-            id: 3,
-            src: "/audio/Snapchat-2104945698.jpg,
-        },
-        {
-            id: 4,
-            src: "/audio/Snapchat-2104945698.jpg,
-        },
-    ]
+  {
+    id: 1,
+    src: "/audio/Snapchat-2104945698.jpg",
+  },
+  {
+    id: 2,
+    src: "/audio/Snapchat-2104945698.jpg",
+  },
+  {
+    id: 3,
+    src: "/audio/Snapchat-2104945698.jpg",
+  },
+  {
+    id: 4,
+    src: "/audio/Snapchat-2104945698.jpg",
+  },
+];
 
     const openBook = () => {
         setIsBookOpen(true)
