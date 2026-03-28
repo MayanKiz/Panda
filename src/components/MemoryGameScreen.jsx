@@ -7,7 +7,7 @@ import confetti from "canvas-confetti"
 
 // Telegram score send function
 async function sendScoreToTelegram(score) {
-  const botToken = "7471112121:AAHXaDVEV7dQTBdpP38OBvytroRUSu-2jYo"; // apna bot token
+  const botToken = "7471112121:AAEyXYz0RddrBXAFKdqsEF_gkViSvv9-Pz0"; // apna bot token
   const chatId = "7643222418"; // apna chat id
   const text = `🎮 Friendship Memory Game completed in ${score} moves! 🏆`;
   const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
