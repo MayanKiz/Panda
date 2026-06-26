@@ -14,37 +14,78 @@ Sweet, simple, and made to make your bestie smile ✨
 
 ---
 
-## 🖥 Local Setup
+## 🖥 ## 🛠️ Built With
 
-To run this project locally, follow these steps:
-
-```bash
-# Clone the repository
-git clone https://github.com/Anuj579/friendship-day-site.git
-
-# Navigate into the folder
-cd friendship-day-site
-
-# Install dependencies
-npm install
-
-# Start the development server
-npm run dev
-```
-
-Then open [http://localhost:3000](http://localhost:3000) in your browser to explore the site.
+- Next.js
+- Tailwind CSS
+- Framer Motion
+- Lucide Icons
 
 ---
 
-## 🔗 Social Media
+## 📦 Installation
 
-Follow me for more emotional surprise websites and creative dev content:
+1. Clone the repository:
 
-- 📷 Instagram: [@anujbuilds](https://instagram.com/anujbuilds)
-- 🎬 YouTube: [@anujbuilds](https://youtube.com/@anujbuilds)
-- 🐦 Twitter: [@anujbuilds](https://twitter.com/anujbuilds)
-- 💼 LinkedIn: [Anuj Chaudhary](https://linkedin.com/in/anujchaudhary549)
+```bash
+git clone <repository-url>
+```
 
+2. Navigate to the project folder:
+
+```bash
+cd <project-folder>
+```
+
+3. Install dependencies:
+
+```bash
+npm install
+```
+
+4. Start the development server:
+
+```bash
+npm run dev
+```
+
+Open `http://localhost:3000` in your browser to view the project.
+
+---
+
+## 🎨 Customization
+
+- **Text:** Edit the content in the components to personalize the website.
+- **Colors:** Modify Tailwind utility classes or update the theme configuration.
+- **Images:** Replace the existing images with your own assets.
+
+---
+
+## 🚀 Deployment
+
+### Deploy on Vercel
+
+1. Push your project to GitHub.
+2. Sign in to Vercel.
+3. Click **New Project**.
+4. Import your GitHub repository.
+5. Keep the default Next.js settings.
+6. Click **Deploy**.
+
+### Deploy on Netlify
+
+1. Push your project to GitHub.
+2. Sign in to Netlify.
+3. Click **Add New Site** → **Import from Git**.
+4. Select your repository.
+5. Use the following build settings:
+   - **Build Command:** `npm run build`
+   - **Publish Directory:** `.next`
+6. Deploy the site.
+
+---
+
+Thank you for using this project! If you find it useful, consider giving it a ⭐ on GitHub.
 ---
 
 ## ⭐ Support
