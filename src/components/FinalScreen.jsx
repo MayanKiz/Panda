@@ -13,16 +13,29 @@ export default function FinalMessageScreen() {
   const [titleComplete, setTitleComplete] = useState(false)
   const [floatingElements, setFloatingElements] = useState([])
 
-  const messages = [
-  "Hey Priyanshi 😏",
-  "This is a place where I can write something...",
-  "But not today.",
-  "Aaj bas dikha raha hu.",
-  "Baaki kabhi aur likhunga.",
-  "Tab tak tum guess karte reh 😂"
+const messages = [
+  "Hey Naaz. ✨",
+  "People say it takes time to build a genuine connection...",
+  "But talking to you yesterday felt like I was finally speaking to my own reflection.",
+  "When you called me your 'male version' and said we share the 'same brain cells'... that hit differently. It felt incredibly real.",
+  "The depth and maturity in your words, especially at just 18, is genuinely magnetic.",
+  "You mentioned you're fascinated by psychology and the mysteries of the human brain...",
+  "But honestly? Yesterday, you effortlessly captivated my mind just by being yourself.",
+  "You also said that you deeply observe every little detail and everything around you, right?",
+  "Well, I observed someone whose vibe carries a very rare kind of spark and peace.",
+  "An ordinary text message just wouldn't do justice to this kind of connection.",
+  "That's why I coded this webpage. Every single line was written manually, entirely from scratch, just for you.",
+  "Because when you find someone this extraordinary and rare, the effort needs to match the person.",
+  "I remember how you said I was your 'male version' — that stuck with me. Because honestly, I felt the same. Like I was talking to someone who just gets it.",
+  "And when you told me, 'I like people who are mature...' — I couldn't type it out during our chat, but it brought this very different, undeniable smile to my face.",
+  "Hearing your soft, genuine voice calling me 'inspirational' and telling me how curious you are to know me...",
+  "When you hesitantly said, 'don't misunderstand me'... honestly, my heart completely melted right then and there.",
+  "Trust me, there was zero chance of any misunderstanding. I just felt incredibly lucky to have caught your attention.",
+  "The way you randomly type 'hehe' and then flawlessly switch back to deep topics...",
+  "Never lose that magic. It really is beautiful.",
+  "So, welcome to my world, Naaz.... 💙"
 ];
-
-const titleWords = ["HAPPY", "NEW", "YEAR"];
+const titleWords = ["FOR", "MS", "NAAZ"];
 
 const isMobile =
   typeof window !== "undefined" && window.innerWidth < 768;
