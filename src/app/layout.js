@@ -1,8 +1,8 @@
 import "./globals.css"
 
 export const metadata = {
-  title: "Happy Friendship Day!",
-  description: "A heartfelt surprise filled with memories, emotions, and a fun little game made just for you.",
+  title: "For You maam!",
+  description: "A heartfelt surprise.. just for you.",
 }
 
 export default function RootLayout({ children }) {
