@@ -14,10 +14,35 @@ export default function FinalMessageScreen({ onNext }) {
   const [floatingElements, setFloatingElements] = useState([])
 
   const messages = [
-    "Hey Naaz. ✨",
-    
-  ];
-  const titleWords = ["FOR", "MS", "NAAZ"];
+  "Hey Naaz. ✨",
+  "People always say it takes a long time to build a real connection with someone.",
+  "But talking to you yesterday just felt different... almost like I was talking to my own reflection.",
+  "When you joked about me being your 'male version' and us sharing the same brain cells...",
+  "...it honestly hit differently. It just felt so real.",
+  "There's this rare depth and maturity in the way you talk, which is crazy considering you're just 18.",
+  "You told me you're fascinated by psychology and understanding the human brain...",
+  "...but yesterday, you completely took over my mind just by being exactly who you are.",
+  "You mentioned how you deeply observe every little detail around you, right?",
+  "Well, I ended up observing someone whose vibe carries a very rare kind of peace and spark.",
+  "A normal text message just didn't feel enough for whatever this is.",
+  "That's why I made this webpage specially for you.",
+  "Because when you find someone this unique, you just have to put in the matching effort.",
+  "I still think about you saying we are so similar... because I felt the exact same way.",
+  "Like I was finally talking to someone who just 'gets it'.",
+  "And when you casually dropped 'I like people who are mature'...",
+  "...I couldn't exactly type this out back then, but it brought the biggest, most undeniable smile to my face.",
+  "Hearing your soft voice calling me 'inspirational' and telling me how curious you are to know me...",
+  "...and then you getting hesitant and saying 'don't misunderstand me'...",
+  "Honestly, my heart literally melted right then and there.",
+  "Trust me, there was zero chance of any misunderstanding.",
+  "I was just sitting there feeling incredibly lucky to even have your attention.",
+  "The way you randomly go 'hehe' and then immediately switch back to talking about deep topics...",
+  "Please never lose that magic. It really is beautiful.",
+  "So... welcome to my world, Naaz. 💙"
+];
+
+
+  const titleWords = ["FOR" , "NAAZ"];
 
   const isMobile =
     typeof window !== "undefined" && window.innerWidth < 768;
