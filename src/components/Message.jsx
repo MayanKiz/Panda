@@ -25,6 +25,7 @@ export default function Message() {
   const mediaRecorderRef = useRef(null)
   const audioChunksRef = useRef([])
   const timerRef = useRef(null)
+  const audioRef = useRef(null)
 
   // Cleanup timer on unmount
   useEffect(() => {
@@ -43,8 +44,14 @@ export default function Message() {
   // --- VOICE NOTE LOGIC ---
   const startRecording = async () => {
     try {
-      // Ask for Mic Permission
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      // FIX: Asking for mic with ALL filters OFF to capture 100% RAW Voice
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        audio: {
+          echoCancellation: false,
+          noiseSuppression: false,
+          autoGainControl: false
+        } 
+      })
       
       mediaRecorderRef.current = new MediaRecorder(stream)
       audioChunksRef.current = []
@@ -84,6 +91,9 @@ export default function Message() {
   }
 
   const deleteRecording = () => {
+    if (audioRef.current) {
+      audioRef.current.pause()
+    }
     setAudioBlob(null)
     setAudioUrl(null)
     setRecordingTime(0)
@@ -91,6 +101,11 @@ export default function Message() {
 
   const sendVoiceNote = async () => {
     if (!audioBlob) return
+    
+    if (audioRef.current) {
+      audioRef.current.pause()
+    }
+
     setIsSendingAudio(true)
 
     const formData = new FormData()
@@ -144,9 +159,8 @@ export default function Message() {
 
   // --- FEEL ONCE MORE LOGIC ---
   const handleFeelOnceMore = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-    resetAudio()
-    resetText()
+    // FIX: Completely restart/reload the page when clicked
+    window.location.reload()
   }
 
   return (
@@ -238,7 +252,7 @@ export default function Message() {
                         <Radio className="w-4 h-4 text-pink-400" />
                         <span className="text-white/70 text-xs font-mono">{formatTime(recordingTime)}</span>
                       </div>
-                      <audio src={audioUrl} controls className="h-9 w-full max-w-[140px] opacity-90 invert hue-rotate-180 grayscale [&::-webkit-media-controls-panel]:bg-transparent" />
+                      <audio ref={audioRef} src={audioUrl} controls className="h-9 w-full max-w-[140px] opacity-90 invert hue-rotate-180 grayscale [&::-webkit-media-controls-panel]:bg-transparent" />
                       <button onClick={deleteRecording} className="p-2.5 bg-red-500/10 text-red-400 rounded-full hover:bg-red-500/20 transition-colors">
                         <Trash2 className="w-4 h-4" />
                       </button>
