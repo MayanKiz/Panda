@@ -5,7 +5,7 @@ import { useState, useEffect } from "react"
 import { Heart, Sparkles, Star } from "lucide-react"
 import confetti from "canvas-confetti"
 
-export default function FinalMessageScreen() {
+export default function FinalMessageScreen({ onNext }) {
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0)
   const [displayedText, setDisplayedText] = useState("")
   const [allMessagesShown, setAllMessagesShown] = useState(false)
@@ -13,32 +13,33 @@ export default function FinalMessageScreen() {
   const [titleComplete, setTitleComplete] = useState(false)
   const [floatingElements, setFloatingElements] = useState([])
 
-const messages = [
-  "Hey Naaz. ✨",
-  "People say it takes time to build a genuine connection...",
-  "But talking to you yesterday felt like I was finally speaking to my own reflection.",
-  "When you called me your 'male version' and said we share the 'same brain cells'... that hit differently. It felt incredibly real.",
-  "The depth and maturity in your words, especially at just 18, is genuinely magnetic.",
-  "You mentioned you're fascinated by psychology and the mysteries of the human brain...",
-  "But honestly? Yesterday, you effortlessly captivated my mind just by being yourself.",
-  "You also said that you deeply observe every little detail and everything around you, right?",
-  "Well, I observed someone whose vibe carries a very rare kind of spark and peace.",
-  "An ordinary text message just wouldn't do justice to this kind of connection.",
-  "That's why I coded this webpage. Every single line was written manually, entirely from scratch, just for you.",
-  "Because when you find someone this extraordinary and rare, the effort needs to match the person.",
-  "I remember how you said I was your 'male version' — that stuck with me. Because honestly, I felt the same. Like I was talking to someone who just gets it.",
-  "And when you told me, 'I like people who are mature...' — I couldn't type it out during our chat, but it brought this very different, undeniable smile to my face.",
-  "Hearing your soft, genuine voice calling me 'inspirational' and telling me how curious you are to know me...",
-  "When you hesitantly said, 'don't misunderstand me'... honestly, my heart completely melted right then and there.",
-  "Trust me, there was zero chance of any misunderstanding. I just felt incredibly lucky to have caught your attention.",
-  "The way you randomly type 'hehe' and then flawlessly switch back to deep topics...",
-  "Never lose that magic. It really is beautiful.",
-  "So, welcome to my world, Naaz.... 💙"
-];
-const titleWords = ["FOR", "MS", "NAAZ"];
+  const messages = [
+    "Hey Naaz. ✨",
+    "People say it takes time to build a genuine connection...",
+    "But talking to you yesterday felt like I was finally speaking to my own reflection.",
+    "When you called me your 'male version' and said we share the 'same brain cells'... that hit differently. It felt incredibly real.",
+    "The depth and maturity in your words, especially at just 18, is genuinely magnetic.",
+    "You mentioned you're fascinated by psychology and the mysteries of the human brain...",
+    "But honestly? Yesterday, you effortlessly captivated my mind just by being yourself.",
+    "You also said that you deeply observe every little detail and everything around you, right?",
+    "Well, I observed someone whose vibe carries a very rare kind of spark and peace.",
+    "An ordinary text message just wouldn't do justice to this kind of connection.",
+    "That's why I coded this webpage. Every single line was written manually, entirely from scratch, just for you.",
+    "Because when you find someone this extraordinary and rare, the effort needs to match the person.",
+    "I remember how you said I was your 'male version' — that stuck with me. Because honestly, I felt the same. Like I was talking to someone who just gets it.",
+    "And when you told me, 'I like people who are mature...' — I couldn't type it out during our chat, but it brought this very different, undeniable smile to my face.",
+    "Hearing your soft, genuine voice calling me 'inspirational' and telling me how curious you are to know me...",
+    "When you hesitantly said, 'don't misunderstand me'... honestly, my heart completely melted right then and there.",
+    "Trust me, there was zero chance of any misunderstanding. I just felt incredibly lucky to have caught your attention.",
+    "The way you randomly type 'hehe' and then flawlessly switch back to deep topics...",
+    "Never lose that magic. It really is beautiful.",
+    "So, welcome to my world, Naaz.... 💙"
+  ];
+  const titleWords = ["FOR", "MS", "NAAZ"];
 
-const isMobile =
-  typeof window !== "undefined" && window.innerWidth < 768;
+  const isMobile =
+    typeof window !== "undefined" && window.innerWidth < 768;
+
   // Special entrance effect
   useEffect(() => {
     // Trigger confetti after title complete
@@ -99,7 +100,7 @@ const isMobile =
     typeNextChar()
   }, [startTyping, currentMessageIndex])
 
-  // FLoating particles
+  // Floating particles
   useEffect(() => {
     const hearts = [...Array(4)].map((_, i) => (
       <motion.div
@@ -133,7 +134,6 @@ const isMobile =
           top: `${Math.random() * 100}%`,
         }}
         animate={{
-          // y: [0, -30, 0],
           y: ["0%", "20%", "-20%", "0%"],
           x: ["0%", "15%", "-15%", "0%"],
           opacity: [0.2, 0.4, 0.2],
@@ -158,7 +158,6 @@ const isMobile =
           top: `${Math.random() * 100}%`,
         }}
         animate={{
-          // y: [0, -25, 0],
           y: ["0%", "10%", "-10%", "0%"],
           x: ["0%", "5%", "-5%", "0%"],
           opacity: [0.2, 0.4, 0.2],
@@ -342,22 +341,39 @@ const isMobile =
             </motion.div>
           )}
 
-          {/* Celebration button */}
+          {/* Action buttons after all messages shown */}
           {allMessagesShown && (
-            <motion.button
-              onClick={triggerCelebration}
-              className="group px-10 py-4 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 text-white text-lg font-bold rounded-full shadow-2xl hover:shadow-cyan-500/25 transition-all duration-300 border-2 border-white/80 hover:border-cyan-400/50 "
-              initial={{ opacity: 0, y: 50, scale: 0.8 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ delay: 2, duration: 0.8, ease: "backOut" }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+            <motion.div 
+              className="flex flex-col sm:flex-row items-center justify-center gap-4"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.8, duration: 0.8 }}
             >
-              <span className="flex items-center gap-2">
-                Celebrate Our Friendship!
-                <Sparkles className="w-5 h-5" />
-              </span>
-            </motion.button>
+              <motion.button
+                onClick={triggerCelebration}
+                className="group px-8 py-4 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 text-white text-lg font-bold rounded-full shadow-2xl hover:shadow-cyan-500/25 transition-all duration-300 border-2 border-white/80 hover:border-cyan-400/50"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <span className="flex items-center gap-2">
+                  Celebrate Our Friendship!
+                  <Sparkles className="w-5 h-5" />
+                </span>
+              </motion.button>
+
+              {onNext && (
+                <motion.button
+                  onClick={onNext}
+                  className="group px-8 py-4 bg-white/10 backdrop-blur-md text-white text-lg font-bold rounded-full shadow-2xl hover:bg-white/20 transition-all duration-300 border-2 border-white/30 hover:border-pink-400/50"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <span className="flex items-center gap-2">
+                    Leave a Note For Me ✨
+                  </span>
+                </motion.button>
+              )}
+            </motion.div>
           )}
         </div>
       </div>
