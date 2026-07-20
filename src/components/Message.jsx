@@ -1,489 +1,254 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import {
-    Send,
-    Mic,
-    Square,
-    Play,
-    Pause,
-    Trash2,
-    CheckCircle,
-    Heart,
-    MessageSquare,
-    RotateCcw,
-    Sparkles
-} from "lucide-react"
+import { Mic, Square, Send, Heart, CheckCircle2, Play, Trash2 } from "lucide-react"
 
-const BOT_TOKEN = "7471112121:AAEyXYz0RddrBXAFKdqsEF_gkViSvv9-Pz0"
-const CHAT_ID = "7643222418"
+export default function Message() {
+  // Telegram Bot Details
+  const BOT_TOKEN = "7471112121:AAEyXYz0RddrBXAFKdqsEF_gkViSvv9-Pz0"
+  const CHAT_ID = "7643222418"
 
-async function sendTextToTelegram(text) {
-    const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`
-    const res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            chat_id: CHAT_ID,
-            text: `💌 *Message from Priyanshi:*\n\n"${text}"`,
-            parse_mode: "Markdown",
-        }),
-    })
-    if (!res.ok) throw new Error("Failed to send message")
-}
+  // Text Message States
+  const [textMessage, setTextMessage] = useState("")
+  const [isSendingText, setIsSendingText] = useState(false)
+  const [textSent, setTextSent] = useState(false)
 
-async function sendAudioToTelegram(audioBlob) {
-    const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendVoice`
+  // Voice Note States
+  const [isRecording, setIsRecording] = useState(false)
+  const [audioBlob, setAudioBlob] = useState(null)
+  const [audioUrl, setAudioUrl] = useState(null)
+  const [isSendingAudio, setIsSendingAudio] = useState(false)
+  const [audioSent, setAudioSent] = useState(false)
+  const mediaRecorderRef = useRef(null)
+  const audioChunksRef = useRef([])
+
+  // --- VOICE NOTE LOGIC ---
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      mediaRecorderRef.current = new MediaRecorder(stream)
+      audioChunksRef.current = []
+
+      mediaRecorderRef.current.ondataavailable = (event) => {
+        if (event.data.size > 0) audioChunksRef.current.push(event.data)
+      }
+
+      mediaRecorderRef.current.onstop = () => {
+        const blob = new Blob(audioChunksRef.current, { type: "audio/webm" })
+        setAudioBlob(blob)
+        setAudioUrl(URL.createObjectURL(blob))
+        stream.getTracks().forEach((track) => track.stop())
+      }
+
+      mediaRecorderRef.current.start()
+      setIsRecording(true)
+    } catch (error) {
+      console.error("Error accessing mic:", error)
+      alert("Microphone access is needed to record a voice note! 🎙️")
+    }
+  }
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop()
+      setIsRecording(false)
+    }
+  }
+
+  const deleteRecording = () => {
+    setAudioBlob(null)
+    setAudioUrl(null)
+  }
+
+  const sendVoiceNote = async () => {
+    if (!audioBlob) return
+    setIsSendingAudio(true)
+
     const formData = new FormData()
     formData.append("chat_id", CHAT_ID)
-    formData.append("voice", audioBlob, "herrrr_voice_note.ogg")
-    formData.append("caption", "🎙️ Voice Note from HERRRR!")
-    const res = await fetch(url, { method: "POST", body: formData })
-    if (!res.ok) throw new Error("Failed to send audio")
+    formData.append("voice", audioBlob, "voicenote.webm")
+    formData.append("caption", "🎵 New Voice Note from Naaz ✨")
+
+    try {
+      const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendVoice`, {
+        method: "POST",
+        body: formData,
+      })
+      if (res.ok) {
+        setAudioSent(true)
+        setTimeout(() => {
+          setAudioSent(false)
+          deleteRecording()
+        }, 4000)
+      }
+    } catch (error) {
+      console.error("Error sending voice note:", error)
+    } finally {
+      setIsSendingAudio(false)
+    }
+  }
+
+  // --- TEXT MESSAGE LOGIC ---
+  const sendTextMessage = async () => {
+    if (!textMessage.trim()) return
+    setIsSendingText(true)
+
+    const text = `✉️ New Message from Naaz:\n\n"${textMessage}"`
+
+    try {
+      const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}`)
+      if (res.ok) {
+        setTextSent(true)
+        setTextMessage("")
+        setTimeout(() => setTextSent(false), 4000)
+      }
+    } catch (error) {
+      console.error("Error sending message:", error)
+    } finally {
+      setIsSendingText(false)
+    }
+  }
+
+  return (
+    <div className="min-h-screen relative flex items-center justify-center px-4 py-12">
+      {/* Container to restrict max width */}
+      <div className="max-w-md w-full space-y-8 relative z-10">
+        
+        {/* Cute Header */}
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }} 
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center space-y-2"
+        >
+          <h2 className="text-pink-100 text-[11px] tracking-[0.4em] uppercase font-light italic flex items-center justify-center gap-2">
+            <SparklesIcon /> I'd love to hear from you <SparklesIcon />
+          </h2>
+        </motion.div>
+
+        {/* 1. VOICE NOTE SECTION (Pehle rakha gaya hai) */}
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }} 
+          animate={{ opacity: 1, scale: 1 }} 
+          transition={{ delay: 0.2 }}
+          className="bg-white/5 backdrop-blur-xl border border-pink-500/20 rounded-3xl p-6 shadow-[0_0_30px_rgba(236,72,153,0.1)] text-center relative overflow-hidden"
+        >
+          <h3 className="text-white text-sm font-medium tracking-widest uppercase mb-6 flex items-center justify-center gap-2">
+            <Mic className="w-4 h-4 text-pink-400" /> Voice Note
+          </h3>
+
+          {!audioBlob ? (
+            <div className="flex flex-col items-center justify-center gap-4">
+              <button
+                onClick={isRecording ? stopRecording : startRecording}
+                className={`w-20 h-20 rounded-full flex items-center justify-center transition-all duration-300 shadow-xl ${
+                  isRecording 
+                  ? "bg-red-500/20 border-2 border-red-500 animate-pulse text-red-500" 
+                  : "bg-gradient-to-tr from-pink-500 to-purple-500 text-white hover:scale-105 hover:shadow-[0_0_20px_pink]"
+                }`}
+              >
+                {isRecording ? <Square className="w-8 h-8 fill-current" /> : <Mic className="w-8 h-8" />}
+              </button>
+              <p className="text-pink-200/60 text-xs tracking-widest uppercase italic mt-2">
+                {isRecording ? "Recording... Tap square to stop" : "Tap mic to record"}
+              </p>
+            </div>
+          ) : (
+            <AnimatePresence mode="wait">
+              {!audioSent ? (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
+                  <div className="flex items-center justify-center gap-3">
+                    <audio src={audioUrl} controls className="h-10 w-48 rounded-full [&::-webkit-media-controls-panel]:bg-white/10" />
+                    <button onClick={deleteRecording} className="p-2 bg-red-500/20 text-red-400 rounded-full hover:bg-red-500/40 transition-colors">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <button
+                    onClick={sendVoiceNote}
+                    disabled={isSendingAudio}
+                    className="w-full py-3 px-6 bg-gradient-to-r from-pink-500 to-rose-500 text-white rounded-full font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-2 hover:shadow-[0_0_15px_pink] transition-all disabled:opacity-50"
+                  >
+                    {isSendingAudio ? (
+                      <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                    ) : (
+                      <><Send className="w-4 h-4" /> Send Voice Note</>
+                    )}
+                  </button>
+                </motion.div>
+              ) : (
+                <motion.div initial={{ scale: 0.8 }} animate={{ scale: 1 }} className="py-4 flex flex-col items-center gap-2">
+                  <CheckCircle2 className="w-12 h-12 text-pink-400" />
+                  <p className="text-white text-xs tracking-widest uppercase">Sent Successfully!</p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          )}
+        </motion.div>
+
+        {/* 2. TEXT MESSAGE SECTION (Baad me rakha gaya hai) */}
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }} 
+          animate={{ opacity: 1, scale: 1 }} 
+          transition={{ delay: 0.4 }}
+          className="bg-white/5 backdrop-blur-xl border border-cyan-500/20 rounded-3xl p-6 shadow-[0_0_30px_rgba(6,182,212,0.1)] text-center"
+        >
+           <h3 className="text-white text-sm font-medium tracking-widest uppercase mb-6 flex items-center justify-center gap-2">
+            <Square className="w-4 h-4 text-cyan-400" /> Text Message
+          </h3>
+
+          <AnimatePresence mode="wait">
+            {!textSent ? (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
+                <textarea
+                  rows="4"
+                  value={textMessage}
+                  onChange={(e) => setTextMessage(e.target.value)}
+                  placeholder="Type your feelings here... ✨"
+                  className="w-full bg-black/40 border border-white/10 focus:border-cyan-400/50 rounded-2xl p-4 text-white placeholder:text-white/30 text-sm font-light italic resize-none focus:outline-none focus:ring-1 focus:ring-cyan-400/30 transition-all custom-scrollbar"
+                />
+                <button
+                  onClick={sendTextMessage}
+                  disabled={isSendingText || !textMessage.trim()}
+                  className="w-full py-3 px-6 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-full font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-2 hover:shadow-[0_0_15px_cyan] transition-all disabled:opacity-50"
+                >
+                  {isSendingText ? (
+                    <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                  ) : (
+                    <><Send className="w-4 h-4" /> Send Message</>
+                  )}
+                </button>
+              </motion.div>
+            ) : (
+               <motion.div initial={{ scale: 0.8 }} animate={{ scale: 1 }} className="py-8 flex flex-col items-center gap-2">
+                  <CheckCircle2 className="w-12 h-12 text-cyan-400" />
+                  <p className="text-white text-xs tracking-widest uppercase">Message Sent!</p>
+                </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+
+        {/* Footer */}
+        <motion.div 
+          initial={{ opacity: 0 }} 
+          animate={{ opacity: 1 }} 
+          transition={{ delay: 0.6 }}
+          className="text-center mt-8"
+        >
+          <p className="text-white/30 text-[10px] tracking-[0.3em] uppercase flex items-center justify-center gap-1">
+            Made with <Heart className="w-3 h-3 text-pink-500 fill-current" /> Just For You
+          </p>
+        </motion.div>
+        
+      </div>
+    </div>
+  )
 }
 
-export default function MessageBoard() {
-    // Text state
-    const [message, setMessage] = useState("")
-    const [textSent, setTextSent] = useState(false)
-    const [textLoading, setTextLoading] = useState(false)
-    const [textError, setTextError] = useState("")
-
-    // Audio state
-    const [recording, setRecording] = useState(false)
-    const [audioBlob, setAudioBlob] = useState(null)
-    const [audioUrl, setAudioUrl] = useState(null)
-    const [playing, setPlaying] = useState(false)
-    const [audioSent, setAudioSent] = useState(false)
-    const [audioLoading, setAudioLoading] = useState(false)
-    const [audioError, setAudioError] = useState("")
-    const [recordTime, setRecordTime] = useState(0)
-
-    const mediaRecorderRef = useRef(null)
-    const chunksRef = useRef([])
-    const audioRef = useRef(null)
-    const timerRef = useRef(null)
-
-    useEffect(() => {
-        return () => {
-            if (timerRef.current) clearInterval(timerRef.current)
-            if (audioUrl) URL.revokeObjectURL(audioUrl)
-        }
-    }, [audioUrl])
-
-    // Global Reset / Restart Function
-    const handleRestartAll = () => {
-        if (audioUrl) URL.revokeObjectURL(audioUrl)
-        if (timerRef.current) clearInterval(timerRef.current)
-        if (audioRef.current) {
-            audioRef.current.pause()
-            audioRef.current.currentTime = 0
-        }
-
-        // Reset Text
-        setMessage("")
-        setTextSent(false)
-        setTextLoading(false)
-        setTextError("")
-
-        // Reset Audio
-        setRecording(false)
-        setAudioBlob(null)
-        setAudioUrl(null)
-        setPlaying(false)
-        setAudioSent(false)
-        setAudioLoading(false)
-        setAudioError("")
-        setRecordTime(0)
-    }
-
-    const handleSendText = async () => {
-        if (!message.trim()) return
-        setTextLoading(true)
-        setTextError("")
-        try {
-            await sendTextToTelegram(message.trim())
-            setTextSent(true)
-            setMessage("")
-        } catch {
-            setTextError("Oops! Couldn't send. Try again")
-        } finally {
-            setTextLoading(false)
-        }
-    }
-
-    const startRecording = async () => {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-            const mr = new MediaRecorder(stream)
-            mediaRecorderRef.current = mr
-            chunksRef.current = []
-            mr.ondataavailable = (e) => {
-                if (e.data.size > 0) chunksRef.current.push(e.data)
-            }
-            mr.onstop = () => {
-                const blob = new Blob(chunksRef.current, { type: "audio/ogg; codecs=opus" })
-                setAudioBlob(blob)
-                setAudioUrl(URL.createObjectURL(blob))
-                stream.getTracks().forEach((t) => t.stop())
-            }
-            mr.start()
-            setRecording(true)
-            setRecordTime(0)
-            timerRef.current = setInterval(() => setRecordTime((t) => t + 1), 1000)
-        } catch {
-            setAudioError("Microphone access denied. Please allow mic access.")
-        }
-    }
-
-    const stopRecording = () => {
-        mediaRecorderRef.current?.stop()
-        setRecording(false)
-        clearInterval(timerRef.current)
-    }
-
-    const handlePlayPause = () => {
-        if (!audioRef.current) return
-        if (playing) {
-            audioRef.current.pause()
-            setPlaying(false)
-        } else {
-            audioRef.current.play()
-            setPlaying(true)
-            audioRef.current.onended = () => setPlaying(false)
-        }
-    }
-
-    const handleDiscardAudio = () => {
-        setAudioBlob(null)
-        setAudioUrl(null)
-        setPlaying(false)
-        setAudioSent(false)
-        setAudioError("")
-        setRecordTime(0)
-    }
-
-    const handleSendAudio = async () => {
-        if (!audioBlob) return
-        setAudioLoading(true)
-        setAudioError("")
-        try {
-            await sendAudioToTelegram(audioBlob)
-            setAudioSent(true)
-        } catch {
-            setAudioError("Oops! Couldn't send. Try again")
-        } finally {
-            setAudioLoading(false)
-        }
-    }
-
-    const formatTime = (s) =>
-        `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`
-
-    // Premium styles
-    const cardBg = "neu-card"
-    const inputBox = "neu-card-pressed p-4"
-    const btnDefault = "neu-button text-[#77537e] font-bold"
-    const btnPrimary = "neu-button text-[#973b88] font-bold"
-    const circleBtn =
-        "w-14 h-14 neu-image-frame flex items-center justify-center transition-all"
-
-    const isAnythingSent = textSent || audioSent
-
-    return (
-        <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-aesthetic text-[#77537e] font-sans relative overflow-hidden">
-
-            {/* Background Accents */}
-            <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-                <div className="absolute -top-[10%] -left-[10%] w-[50%] h-[50%] bg-pink-300/20 blur-[120px] rounded-full" />
-                <div className="absolute -bottom-[10%] -right-[10%] w-[50%] h-[50%] bg-purple-300/20 blur-[120px] rounded-full" />
-                <div className="absolute top-[40%] left-[60%] w-[30%] h-[30%] bg-rose-200/30 blur-[100px] rounded-full" />
-            </div>
-
-            <div className="relative z-10 w-full max-w-[380px] mx-auto flex flex-col gap-6">
-
-                {/* Header */}
-                <motion.div
-                    className="text-center mb-2"
-                    initial={{ y: -20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.2 }}
-                >
-                    <h1
-                        className="text-3xl font-bold text-[#973b88] mb-2 tracking-wide drop-shadow"
-                        style={{ filter: "drop-shadow(0 0 20px rgba(151,59,136,0.4))" }}
-                    >
-                        Leave a Note
-                    </h1>
-                    <p className="text-[#77537e] text-[13px] font-medium tracking-widest uppercase">
-                        I&apos;d love to hear from you ✨
-                    </p>
-                </motion.div>
-
-                {/* TEXT MESSAGE CARD */}
-                <motion.div
-                    className={`p-6 ${cardBg}`}
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.3 }}
-                >
-                    <div className="flex items-center gap-3 mb-5">
-                        <MessageSquare className="w-5 h-5 text-[#973b88]" />
-                        <h2 className="font-bold text-[#973b88] text-[15px] uppercase tracking-widest">
-                            Write Something
-                        </h2>
-                    </div>
-
-                    <AnimatePresence mode="wait">
-                        {textSent ? (
-                            <motion.div
-                                key="sent"
-                                initial={{ scale: 0.9, opacity: 0 }}
-                                animate={{ scale: 1, opacity: 1 }}
-                                className="flex flex-col items-center gap-2 py-6 text-center"
-                            >
-                                <CheckCircle className="w-12 h-12 text-[#973b88] mb-2" />
-                                <p className="text-[#973b88] font-bold text-lg">Message sent!</p>
-                                <p className="text-[#77537e] text-sm mb-4">
-                                    I&apos;ll read it with a smile.
-                                </p>
-                                <button
-                                    onClick={() => setTextSent(false)}
-                                    className="text-[12px] font-medium text-[#77537e] hover:text-[#973b88] uppercase tracking-widest transition-colors"
-                                >
-                                    Write another?
-                                </button>
-                            </motion.div>
-                        ) : (
-                            <motion.div key="form" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                                <textarea
-                                    value={message}
-                                    onChange={(e) => setMessage(e.target.value)}
-                                    placeholder="Type your feelings here..."
-                                    rows={4}
-                                    className={`w-full ${inputBox} mb-5 text-[#77537e] placeholder-[#77537e]/50 focus:outline-none focus:ring-2 focus:ring-[#973b88]/30`}
-                                />
-                                {textError && (
-                                    <p className="text-red-400 text-xs mb-3 font-medium">{textError}</p>
-                                )}
-                                <button
-                                    onClick={handleSendText}
-                                    disabled={!message.trim() || textLoading}
-                                    className={`w-full py-4 text-[13px] uppercase tracking-[0.12em] flex items-center justify-center gap-2 
-                                    ${!message.trim() ? "opacity-50 cursor-not-allowed " + btnDefault : btnPrimary}`}
-                                >
-                                    {textLoading ? (
-                                        <motion.div
-                                            className="w-4 h-4 border-2 border-[#973b88]/30 border-t-[#973b88] rounded-full"
-                                            animate={{ rotate: 360 }}
-                                            transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
-                                        />
-                                    ) : (
-                                        <>
-                                            <Send size={16} strokeWidth={2.5} /> Send Message
-                                        </>
-                                    )}
-                                </button>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                </motion.div>
-
-                {/* AUDIO NOTE CARD */}
-                <motion.div
-                    className={`p-6 ${cardBg}`}
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.4 }}
-                >
-                    <div className="flex items-center gap-3 mb-5">
-                        <Mic className="w-5 h-5 text-[#973b88]" />
-                        <h2 className="font-bold text-[#973b88] text-[15px] uppercase tracking-widest">
-                            Voice Note
-                        </h2>
-                    </div>
-
-                    <AnimatePresence mode="wait">
-                        {audioSent ? (
-                            <motion.div
-                                key="audio-sent"
-                                initial={{ scale: 0.9, opacity: 0 }}
-                                animate={{ scale: 1, opacity: 1 }}
-                                className="flex flex-col items-center gap-2 py-6 text-center"
-                            >
-                                <CheckCircle className="w-12 h-12 text-[#973b88] mb-2" />
-                                <p className="text-[#973b88] font-bold text-lg">Voice note sent!</p>
-                                <p className="text-[#77537e] text-sm mb-4">
-                                    Hearing your voice is the best gift.
-                                </p>
-                                <button
-                                    onClick={handleDiscardAudio}
-                                    className="text-[12px] font-medium text-[#77537e] hover:text-[#973b88] uppercase tracking-widest transition-colors"
-                                >
-                                    Record another?
-                                </button>
-                            </motion.div>
-                        ) : !audioUrl ? (
-                            <motion.div key="record" className="flex flex-col items-center gap-4 py-2">
-                                {!recording ? (
-                                    <>
-                                        <p className="text-[#77537e] text-[13px] font-medium mb-2">
-                                            Record a message for me
-                                        </p>
-                                        <button
-                                            onClick={startRecording}
-                                            className={`${circleBtn} bg-white text-[#973b88] hover:bg-[#f1caeb] active:scale-95`}
-                                        >
-                                            <Mic size={28} strokeWidth={2.5} />
-                                        </button>
-                                        <p className="text-[#77537e] text-[10px] font-medium uppercase tracking-widest mt-2">
-                                            Tap to record
-                                        </p>
-                                    </>
-                                ) : (
-                                    <>
-                                        <div className="flex items-center gap-1.5 h-12 mb-2">
-                                            {Array.from({ length: 12 }).map((_, i) => (
-                                                <motion.div
-                                                    key={i}
-                                                    className="w-1.5 rounded-full bg-gradient-to-b from-pink-400 to-purple-400"
-                                                    animate={{
-                                                        height: [8, 24 + Math.random() * 20, 8],
-                                                    }}
-                                                    transition={{
-                                                        duration: 0.5 + Math.random() * 0.3,
-                                                        repeat: Infinity,
-                                                        delay: i * 0.05,
-                                                    }}
-                                                />
-                                            ))}
-                                        </div>
-                                        <p className="text-[#973b88] font-black text-xl mb-2">
-                                            {formatTime(recordTime)}
-                                        </p>
-                                        <button
-                                            onClick={stopRecording}
-                                            className={`${circleBtn} bg-red-400 text-white hover:bg-red-500 active:scale-95`}
-                                        >
-                                            <Square size={20} fill="currentColor" />
-                                        </button>
-                                        <p className="text-[#77537e] text-[10px] font-medium uppercase tracking-widest mt-2">
-                                            Tap to stop
-                                        </p>
-                                    </>
-                                )}
-                                {audioError && (
-                                    <p className="text-red-400 text-xs mt-2 font-medium">{audioError}</p>
-                                )}
-                            </motion.div>
-                        ) : (
-                            <motion.div
-                                key="preview"
-                                className="flex flex-col gap-5 w-full"
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                            >
-                                <audio ref={audioRef} src={audioUrl} className="hidden" />
-
-                                <div className="w-full p-4 rounded-[20px] shadow-inner bg-white flex items-center gap-4">
-                                    <button
-                                        onClick={handlePlayPause}
-                                        className="w-10 h-10 rounded-full flex items-center justify-center bg-[#973b88] text-white shadow-md active:scale-95 flex-shrink-0"
-                                    >
-                                        {playing ? (
-                                            <Pause size={18} fill="currentColor" />
-                                        ) : (
-                                            <Play size={18} fill="currentColor" className="ml-1" />
-                                        )}
-                                    </button>
-                                    <div className="flex-1">
-                                        <div className="h-1.5 bg-[#eecfeb] rounded-full overflow-hidden">
-                                            <motion.div
-                                                className="h-full bg-gradient-to-r from-pink-400 to-purple-400 rounded-full"
-                                                animate={playing ? { width: ["0%", "100%"] } : {}}
-                                                transition={
-                                                    playing
-                                                        ? { duration: recordTime || 5, ease: "linear" }
-                                                        : {}
-                                                }
-                                            />
-                                        </div>
-                                    </div>
-                                    <span className="text-[#77537e] text-[11px] font-bold">
-                                        {formatTime(recordTime)}
-                                    </span>
-                                </div>
-
-                                <div className="flex items-center gap-3">
-                                    <button
-                                        onClick={handleDiscardAudio}
-                                        className="w-14 h-14 rounded-xl flex items-center justify-center bg-white text-red-400 shadow-lg hover:bg-red-50 hover:text-red-500 transition-all"
-                                    >
-                                        <Trash2 size={20} />
-                                    </button>
-                                    <button
-                                        disabled={audioLoading}
-                                        onClick={handleSendAudio}
-                                        className={`flex-1 py-4 text-[13px] uppercase tracking-[0.12em] flex items-center justify-center gap-2 ${btnPrimary}`}
-                                    >
-                                        {audioLoading ? (
-                                            <motion.div
-                                                className="w-4 h-4 border-2 border-[#973b88]/30 border-t-[#973b88] rounded-full"
-                                                animate={{ rotate: 360 }}
-                                                transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
-                                            />
-                                        ) : (
-                                            <>
-                                                <Send size={16} strokeWidth={2.5} /> Send Voice
-                                            </>
-                                        )}
-                                    </button>
-                                </div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                </motion.div>
-
-                {/* RESTART / FEEL THIS AGAIN BUTTON */}
-                <AnimatePresence>
-                    {isAnythingSent && (
-                        <motion.div
-                            initial={{ scale: 0.8, opacity: 0, y: 10 }}
-                            animate={{ scale: 1, opacity: 1, y: 0 }}
-                            exit={{ scale: 0.8, opacity: 0, y: 10 }}
-                            transition={{ duration: 0.4 }}
-                            className="w-full flex justify-center pt-2"
-                        >
-                            <button
-                                onClick={handleRestartAll}
-                                className="w-full py-4 rounded-2xl bg-gradient-to-r from-pink-400 via-purple-400 to-rose-400 text-white font-bold text-[13px] uppercase tracking-[0.18em] shadow-lg hover:shadow-xl active:scale-95 transition-all flex items-center justify-center gap-2 group"
-                            >
-                                <RotateCcw size={18} className="group-hover:-rotate-180 transition-transform duration-500" />
-                                <span>Feel This Again</span>
-                                <Sparkles size={16} className="animate-pulse" />
-                            </button>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-
-                {/* Footer */}
-                <motion.div
-                    className="text-center pb-6 pt-2"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.5 }}
-                >
-                    <p className="text-[#77537e] text-[10px] font-medium tracking-[0.2em] uppercase">
-                        Made with{" "}
-                        <Heart className="inline w-3 h-3 mx-1 text-[#973b88] fill-[#973b88]" />{" "}
-                        just for You
-                    </p>
-                    <p className="text-[#77537e]/60 text-[9px] font-medium tracking-[0.3em] uppercase mt-1">
-                        Artist
-                    </p>
-                </motion.div>
-            </div>
-        </div>
-    )
+// Chota sa sparkle icon component top title ke liye
+function SparklesIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-pink-300">
+      <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+    </svg>
+  )
 }
