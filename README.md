@@ -88,12 +88,17 @@ Open `http://localhost:3000` in your browser to view the project.
 Thank you for using this project! If you find it useful, consider giving it a ⭐ on GitHub.
 ---
 
-## ⭐ Support
 
-If you found this project lovely, please consider giving it a ⭐ on [GitHub](https://github.com/Anuj579)  
-Thank you for being here! 🫶  
-Made with emotions by **Anuj** – _@anujbuilds_
+bvcbvbvbnvbvnnn
 
-✨ If you'd like to support my work directly, you can donate via UPI:  
-**anujbuilds.wallet@phonepe**  
-Even a small contribution helps me keep creating cute, emotional projects 💖
+
+
+
+
+
+
+
+
+
+
+bv
