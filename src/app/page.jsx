@@ -44,6 +44,19 @@ export default function Home() {
     setCurrentScreen((prev) => prev + 1)
   }
 
+  const resetToBeginning = () => {
+    setCurrentScreen(0)
+    setIsLoading(true)
+    setGameCompleted(false)
+    setMusicStarted(false)
+    
+    const timer = setTimeout(() => {
+      setIsLoading(false)
+    }, 3500)
+    
+    return () => clearTimeout(timer)
+  }
+
   if (isLoading) {
     return <Loader />
   }
@@ -57,7 +70,7 @@ export default function Home() {
     <FinalScreen key="final" onNext={nextScreen} />,
     
     // 👇 3. Message Screen ko 5th screen bana diya
-    <Message key="message" />,
+    <Message key="message" onReset={resetToBeginning} />,
   ]
 
   return (
@@ -91,7 +104,7 @@ export default function Home() {
           delay: 1,
         }}
         className="fixed bottom-4 right-4 text-[13px] text-white/50 pointer-events-none z-40 font-light">
-        @m4y4nkydv
+        @berlin_.fx
       </motion.div>
     </div>
   )
