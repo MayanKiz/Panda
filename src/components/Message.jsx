@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Mic, Square, Send, Heart, CheckCircle2, Trash2, Plus, Sparkles, Repeat, Radio } from "lucide-react"
+import { Mic, Square, Send, Heart, CheckCircle2, Trash2, Plus, Sparkles, Repeat, Radio, Play, Pause } from "lucide-react"
 
 export default function Message() {
   // Telegram Bot Details
@@ -16,9 +16,13 @@ export default function Message() {
 
   // Voice Note States
   const [isRecording, setIsRecording] = useState(false)
+  const [isRecordingPaused, setIsRecordingPaused] = useState(false) // NEW: Pause during recording
   const [recordingTime, setRecordingTime] = useState(0)
+  
   const [audioBlob, setAudioBlob] = useState(null)
   const [audioUrl, setAudioUrl] = useState(null)
+  const [isPlayingPreview, setIsPlayingPreview] = useState(false) // NEW: Play/Pause in preview
+  
   const [isSendingAudio, setIsSendingAudio] = useState(false)
   const [audioSent, setAudioSent] = useState(false)
   
@@ -44,7 +48,7 @@ export default function Message() {
   // --- VOICE NOTE LOGIC ---
   const startRecording = async () => {
     try {
-      // FIX: Asking for mic with ALL filters OFF to capture 100% RAW Voice
+      // 100% RAW Voice (No filters)
       const stream = await navigator.mediaDevices.getUserMedia({ 
         audio: {
           echoCancellation: false,
@@ -69,9 +73,9 @@ export default function Message() {
 
       mediaRecorderRef.current.start()
       setIsRecording(true)
+      setIsRecordingPaused(false)
       setRecordingTime(0)
 
-      // Start Timer
       timerRef.current = setInterval(() => {
         setRecordingTime((prev) => prev + 1)
       }, 1000)
@@ -82,11 +86,42 @@ export default function Message() {
     }
   }
 
+  // NEW: Pause & Resume Recording Logic
+  const togglePauseRecording = () => {
+    if (!mediaRecorderRef.current) return
+    
+    if (isRecordingPaused) {
+      mediaRecorderRef.current.resume()
+      setIsRecordingPaused(false)
+      timerRef.current = setInterval(() => {
+        setRecordingTime((prev) => prev + 1)
+      }, 1000)
+    } else {
+      mediaRecorderRef.current.pause()
+      setIsRecordingPaused(true)
+      clearInterval(timerRef.current)
+    }
+  }
+
   const stopRecording = () => {
     if (mediaRecorderRef.current && isRecording) {
       mediaRecorderRef.current.stop()
       setIsRecording(false)
+      setIsRecordingPaused(false)
       clearInterval(timerRef.current)
+    }
+  }
+
+  // NEW: Custom Preview Playback Logic
+  const handlePlayPausePreview = () => {
+    if (!audioRef.current) return
+    if (isPlayingPreview) {
+      audioRef.current.pause()
+      setIsPlayingPreview(false)
+    } else {
+      audioRef.current.play()
+      setIsPlayingPreview(true)
+      audioRef.current.onended = () => setIsPlayingPreview(false)
     }
   }
 
@@ -97,6 +132,7 @@ export default function Message() {
     setAudioBlob(null)
     setAudioUrl(null)
     setRecordingTime(0)
+    setIsPlayingPreview(false)
   }
 
   const sendVoiceNote = async () => {
@@ -159,7 +195,7 @@ export default function Message() {
 
   // --- FEEL ONCE MORE LOGIC ---
   const handleFeelOnceMore = () => {
-    // FIX: Completely restart/reload the page when clicked
+    // Completely reloads the page for a fresh start!
     window.location.reload()
   }
 
@@ -214,32 +250,38 @@ export default function Message() {
                 ) : (
                   <motion.div key="recording" initial={{ opacity: 0, width: "auto" }} animate={{ opacity: 1, width: "100%" }} exit={{ opacity: 0 }} className="flex flex-col items-center gap-4">
                     
-                    {/* WhatsApp style recording pill */}
-                    <div className="flex items-center justify-between w-full max-w-[240px] bg-red-500/10 border border-red-500/30 rounded-full p-2 pr-4 shadow-[0_0_20px_rgba(239,68,68,0.15)]">
-                      <div className="flex items-center gap-3 pl-2">
-                        <div className="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.8)]" />
+                    {/* WhatsApp style recording pill with PAUSE option */}
+                    <div className="flex items-center justify-between w-full max-w-[260px] bg-red-500/10 border border-red-500/30 rounded-full p-2 pl-3 pr-2 shadow-[0_0_20px_rgba(239,68,68,0.15)]">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-2.5 h-2.5 bg-red-500 rounded-full ${isRecordingPaused ? 'opacity-50' : 'animate-pulse'} shadow-[0_0_8px_rgba(239,68,68,0.8)]`} />
                         <span className="text-red-400 font-mono text-sm tracking-wider font-medium">
                           {formatTime(recordingTime)}
                         </span>
                       </div>
                       
-                      {/* Faux Waveform Animation */}
-                      <div className="flex items-center gap-1 opacity-70">
-                        {[...Array(5)].map((_, i) => (
-                          <motion.div 
-                            key={i}
-                            animate={{ height: ["4px", "16px", "4px"] }} 
-                            transition={{ repeat: Infinity, duration: 0.8, delay: i * 0.1 }}
-                            className="w-1 bg-red-400 rounded-full"
-                          />
-                        ))}
-                      </div>
+                      {/* Faux Waveform or Paused Text */}
+                      {!isRecordingPaused ? (
+                        <div className="flex items-center gap-1 opacity-70">
+                          {[...Array(5)].map((_, i) => (
+                            <motion.div key={i} animate={{ height: ["4px", "16px", "4px"] }} transition={{ repeat: Infinity, duration: 0.8, delay: i * 0.1 }} className="w-1 bg-red-400 rounded-full" />
+                          ))}
+                        </div>
+                      ) : (
+                        <span className="text-red-400/70 text-[10px] uppercase font-bold tracking-widest">Paused</span>
+                      )}
 
-                      <button onClick={stopRecording} className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center text-red-400 hover:bg-red-500/40 transition-colors">
-                        <Square className="w-3.5 h-3.5 fill-current" />
-                      </button>
+                      <div className="flex items-center gap-1.5">
+                        <button onClick={togglePauseRecording} className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center text-red-400 hover:bg-red-500/40 transition-colors">
+                          {isRecordingPaused ? <Mic className="w-4 h-4" /> : <Pause className="w-4 h-4 fill-current" />}
+                        </button>
+                        <button onClick={stopRecording} className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center text-red-400 hover:bg-red-500/40 transition-colors">
+                          <Square className="w-3.5 h-3.5 fill-current" />
+                        </button>
+                      </div>
                     </div>
-                    <p className="text-red-400/60 text-[10px] tracking-widest uppercase italic">Recording...</p>
+                    <p className="text-red-400/60 text-[10px] tracking-widest uppercase italic">
+                      {isRecordingPaused ? "Recording Paused..." : "Recording..."}
+                    </p>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -247,16 +289,33 @@ export default function Message() {
               <AnimatePresence mode="wait">
                 {!audioSent ? (
                   <motion.div key="preview" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-6">
-                    <div className="flex items-center justify-center gap-3 bg-black/30 p-2 pl-4 rounded-full border border-white/10 w-full max-w-[280px] mx-auto">
-                      <div className="flex items-center gap-2">
-                        <Radio className="w-4 h-4 text-pink-400" />
-                        <span className="text-white/70 text-xs font-mono">{formatTime(recordingTime)}</span>
+                    
+                    {/* HIDDEN DEFAULT AUDIO PLAYER */}
+                    <audio ref={audioRef} src={audioUrl} className="hidden" />
+
+                    {/* NEW CUSTOM AUDIO PREVIEW UI */}
+                    <div className="flex items-center justify-between gap-4 bg-black/40 p-2 pr-4 rounded-full border border-white/10 w-full max-w-[280px] mx-auto">
+                      <button onClick={handlePlayPausePreview} className="w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-md active:scale-95 flex-shrink-0">
+                        {isPlayingPreview ? <Pause size={18} fill="currentColor" /> : <Play size={18} fill="currentColor" className="ml-1" />}
+                      </button>
+                      
+                      <div className="flex-1">
+                        <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
+                          <motion.div 
+                            className="h-full bg-gradient-to-r from-pink-400 to-purple-400 rounded-full" 
+                            animate={isPlayingPreview ? { width: ["0%", "100%"] } : { width: "0%" }} 
+                            transition={isPlayingPreview ? { duration: recordingTime || 1, ease: "linear" } : { duration: 0 }} 
+                          />
+                        </div>
                       </div>
-                      <audio ref={audioRef} src={audioUrl} controls className="h-9 w-full max-w-[140px] opacity-90 invert hue-rotate-180 grayscale [&::-webkit-media-controls-panel]:bg-transparent" />
-                      <button onClick={deleteRecording} className="p-2.5 bg-red-500/10 text-red-400 rounded-full hover:bg-red-500/20 transition-colors">
+                      
+                      <span className="text-white/60 text-[10px] font-mono tracking-widest">{formatTime(recordingTime)}</span>
+                      
+                      <button onClick={deleteRecording} className="p-2 bg-red-500/10 text-red-400 rounded-full hover:bg-red-500/20 transition-colors">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
+
                     <button
                       onClick={sendVoiceNote}
                       disabled={isSendingAudio}
