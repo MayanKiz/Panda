@@ -203,18 +203,34 @@ export default function MemoryGameScreen({ onGameComplete, gameCompleted }) {
                     key={card.id}
                     className="relative w-20 h-20 md:w-24 md:h-24 cursor-pointer"
                     onClick={() => flipCard(card.id)}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                    whileHover={{ scale: 1.08 }}
+                    whileTap={{ scale: 0.92 }}
+                    style={{ perspective: "1000px" }}
                   >
+                    {/* Front Face - Star */}
                     <motion.div
-                      className={`absolute inset-0 flex items-center justify-center rounded-xl text-3xl md:text-4xl font-bold transition-colors duration-300 ${
-                        isFlipped ? "bg-gradient-to-br from-cyan-400 to-pink-500 text-white" : "bg-black/40 border border-white/10"
-                      }`}
+                      className="absolute inset-0 flex items-center justify-center rounded-2xl text-3xl md:text-4xl font-bold backdrop-blur-xl border-2 bg-gradient-to-br from-blue-500/40 via-purple-500/40 to-pink-500/40 border-white/40 shadow-[0_8px_32px_rgba(168,85,247,0.3)] hover:shadow-[0_8px_32px_rgba(244,114,182,0.5)]"
                       animate={{ rotateY: isFlipped ? 180 : 0 }}
-                      transition={{ duration: 0.6 }}
-                      style={{ transformStyle: "preserve-3d" }}
+                      transition={{ duration: 0.6, ease: "easeInOut" }}
+                      style={{ 
+                        transformStyle: "preserve-3d",
+                        backfaceVisibility: "hidden"
+                      }}
                     >
-                      {isFlipped ? card.symbol : "❓️"}
+                      <Star className="w-8 h-8 md:w-10 md:h-10 text-yellow-300/70 drop-shadow-lg" strokeWidth={2} />
+                    </motion.div>
+
+                    {/* Back Face - Symbol */}
+                    <motion.div
+                      className="absolute inset-0 flex items-center justify-center rounded-2xl text-3xl md:text-4xl font-bold backdrop-blur-xl border-2 bg-gradient-to-br from-cyan-400/80 via-purple-400/70 to-pink-500/80 border-cyan-300/50 text-white shadow-[0_8px_32px_rgba(34,211,238,0.3)]"
+                      animate={{ rotateY: isFlipped ? 0 : 180 }}
+                      transition={{ duration: 0.6, ease: "easeInOut" }}
+                      style={{ 
+                        transformStyle: "preserve-3d",
+                        backfaceVisibility: "hidden"
+                      }}
+                    >
+                      {card.symbol}
                     </motion.div>
                   </motion.div>
                 )
