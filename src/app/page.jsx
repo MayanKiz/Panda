@@ -9,6 +9,9 @@ import PhotoBookScreen from "@/components/PhotoBookScreen"
 import FinalScreen from "@/components/FinalScreen"
 import Music from "@/components/Music"
 
+// 👇 1. Message Component Import Kiya
+import Message from "@/components/Message" 
+
 export default function Home() {
   const [currentScreen, setCurrentScreen] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
@@ -49,7 +52,12 @@ export default function Home() {
     <IntroScreen key="intro" onNext={handleIntroComplete} />,
     <MemoryGameScreen key="game" onGameComplete={handleGameComplete} gameCompleted={gameCompleted} />,
     <PhotoBookScreen key="photos" onNext={nextScreen} />,
-    <FinalScreen key="final" />,
+    
+    // 👇 2. onNext prop pass kiya taaki FinalScreen ke baad next ja sake
+    <FinalScreen key="final" onNext={nextScreen} />,
+    
+    // 👇 3. Message Screen ko 5th screen bana diya
+    <Message key="message" />,
   ]
 
   return (
